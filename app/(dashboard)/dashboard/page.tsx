@@ -12,6 +12,7 @@ import { RecurringFormDialog } from "@/components/recurring/recurring-form-dialo
 import { ExpenseFormDialog } from "@/components/expenses/expense-form-dialog";
 import { TimeGrain } from "@/types/database";
 import { ExpenseWithCategory, RecurringItemWithCategory } from "@/types/database";
+import { CurrencyExchange } from "@/components/dashboard/currency-exchange";
 
 export default function DashboardPage() {
   const [timeGrain, setTimeGrain] = React.useState<TimeGrain>("month");
@@ -54,7 +55,8 @@ export default function DashboardPage() {
       />
 
       {/* Charts - Stack on mobile, 2 columns on desktop */}
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-3">
+        <CurrencyExchange />
         <SpendingChart timeGrain={timeGrain} />
         <IncomeExpensesChart timeGrain={timeGrain} />
       </div>
