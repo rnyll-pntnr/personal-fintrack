@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrencySymbol } from "@/lib/currency";
 import { useProfile } from "@/hooks/use-user";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 interface ExchangeRate {
   code: string;
@@ -37,7 +39,7 @@ export function CurrencyExchange() {
         
         // Replace with your API endpoint
         const response = await fetch(
-          `https://api.exchangerate-api.com/v4/latest/${user.currency}`
+          `https://open.er-api.com/v6/latest/${user.currency}`
         );
         
         if (!response.ok) throw new Error("Failed to fetch exchange rates");
@@ -83,14 +85,28 @@ export function CurrencyExchange() {
         <p className="text-sm text-muted-foreground">
           {user?.currency} exchange rates
         </p>
+        <CardAction>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                <Info className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-xs">
+                Rates By <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Exchange Rate API</a>
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {isLoading ? (
             Array(5).fill(0).map((_, i) => (
               <div key={i} className="flex items-center justify-between">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-16 w-24" />
+                <Skeleton className="h-16 w-32" />
               </div>
             ))
           ) : (

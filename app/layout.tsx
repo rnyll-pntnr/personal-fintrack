@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/context/theme-context";
 import { QueryProvider } from "@/context/query-context";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/hooks/use-toast-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,7 +67,9 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <ToastProvider>
-                {children}
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
               </ToastProvider>
             </AuthProvider>
           </QueryProvider>
