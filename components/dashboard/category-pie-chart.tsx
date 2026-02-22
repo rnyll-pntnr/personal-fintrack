@@ -30,7 +30,7 @@ function CustomLegend({ payload, currency }: { payload?: Array<{ value: string; 
         <div key={index} className="flex items-center justify-between gap-2 p-1.5 rounded hover:bg-accent/50 transition-colors">
           <div className="flex items-center gap-2">
             <div
-              className={`w-3 h-3 rounded-full ${entry.payload.color ? '' : 'bg-primary'}`}
+              className={`w-3 h-3 rounded-full ${entry.payload.color ? '' : 'bg-black'}`}
               style={{ backgroundColor: entry.payload.color }}
             />
             <span className="text-sm text-muted-foreground">{entry.value === 'value' || !entry.value ? 'Uncategorized' : entry.value}</span>
