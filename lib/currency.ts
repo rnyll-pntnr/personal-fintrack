@@ -4,6 +4,7 @@
 
 // Common currencies with their display info
 export const CURRENCIES = {
+  PHP: { name: 'Philippine Peso', symbol: '₱', locale: 'en-PH' },
   AED: { name: 'UAE Dirham', symbol: 'AED', locale: 'en-AE' },
   USD: { name: 'US Dollar', symbol: '$', locale: 'en-US' },
   EUR: { name: 'Euro', symbol: '€', locale: 'de-DE' },
@@ -13,7 +14,6 @@ export const CURRENCIES = {
   SAR: { name: 'Saudi Riyal', symbol: '﷼', locale: 'ar-SA' },
   CAD: { name: 'Canadian Dollar', symbol: '$', locale: 'en-CA' },
   AUD: { name: 'Australian Dollar', symbol: '$', locale: 'en-AU' },
-  PHP: { name: 'Philippine Peso', symbol: '₱', locale: 'en-PH' },
 } as const
 
 export type CurrencyCode = keyof typeof CURRENCIES

@@ -5,6 +5,27 @@ import { CategoryInsert, ThemeAccent, RecurringFrequency } from '@/types/databas
  * Application constants
  */
 
+// Category color palette (from migration)
+export const CATEGORY_COLORS: Array<{
+  value: string
+  label: string
+  color: string
+}> = [
+  { value: 'orange', label: 'Orange', color: '#f97316' },
+  { value: 'blue', label: 'Blue', color: '#3b82f6' },
+  { value: 'yellow', label: 'Yellow', color: '#eab308' },
+  { value: 'purple', label: 'Purple', color: '#a855f7' },
+  { value: 'pink', label: 'Pink', color: '#ec4899' },
+  { value: 'red', label: 'Red', color: '#ef4444' },
+  { value: 'cyan', label: 'Cyan', color: '#06b6d4' },
+  { value: 'teal', label: 'Teal', color: '#14b8a6' },
+  { value: 'rose', label: 'Rose', color: '#f472b6' },
+  { value: 'gray', label: 'Gray', color: '#6b7280' },
+  { value: 'emerald', label: 'Emerald', color: '#10b981' },
+  { value: 'indigo', label: 'Indigo', color: '#8b5cf6' },
+  { value: 'amber', label: 'Amber', color: '#f59e0b' },
+]
+
 // Theme accent colors with their display info
 export const THEME_ACCENTS: Array<{
   value: ThemeAccent

@@ -18,7 +18,7 @@ A personal finance tracker and admin dashboard built with Next.js, Tailwind CSS,
 - **Category Distribution**: Pie chart showing spending by category
 - **Recent Expenses**: Table of recent transactions
 - **Time-Grain Toggle**: Switch between Week, Month, and Year views
-- **Currency Exchange Rates**: Real-time exchange rates for popular currencies with attribution to Exchange Rate API
+- **Currency Exchange Rates**: Real-time exchange rates for popular currencies
 
 ### Smart Recurring Checklist
 - Grid of monthly/weekly bills with category badges

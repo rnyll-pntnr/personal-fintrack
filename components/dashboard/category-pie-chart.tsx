@@ -6,7 +6,6 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Legend,
   Tooltip,
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,20 +25,24 @@ function CustomLegend({ payload, currency }: { payload?: Array<{ value: string; 
   if (!payload) return null
   
   return (
-    <div className="flex flex-wrap gap-2 justify-center mt-4">
+    <div className="space-y-2 mt-4 max-h-[200px] overflow-y-auto pr-2">
       {payload.map((entry, index) => (
-        <div key={index} className="flex items-center gap-1.5 text-xs">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: entry.payload.color }}
-          />
-          <span className="text-muted-foreground">{entry.value === 'value' ? 'Uncategorized' : entry.value}</span>
-          <span className="font-medium">
-            {formatCurrency(entry.payload.amount, currency)}
-          </span>
-          <span className="text-muted-foreground">
-            ({entry.payload.percentage.toFixed(0)}%)
-          </span>
+        <div key={index} className="flex items-center justify-between gap-2 p-1.5 rounded hover:bg-accent/50 transition-colors">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-3 h-3 rounded-full ${entry.payload.color ? '' : 'bg-primary'}`}
+              style={{ backgroundColor: entry.payload.color }}
+            />
+            <span className="text-sm text-muted-foreground">{entry.value === 'value' || !entry.value ? 'Uncategorized' : entry.value}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-sm font-medium">
+              {formatCurrency(entry.payload.amount, currency)}
+            </span>
+            <span className="text-xs text-muted-foreground ml-1">
+              ({entry.payload.percentage.toFixed(2)}%)
+            </span>
+          </div>
         </div>
       ))}
     </div>
@@ -57,10 +60,39 @@ export function CategoryPieChart({ timeGrain }: CategoryPieChartProps) {
 
   const currency = profile?.currency || 'AED'
 
-  // Transform data for the pie chart
+  // Transform data for the pie chart - group small categories into "Other"
   const chartData = React.useMemo(() => {
     if (!categoryStats) return []
-    return categoryStats.map((stat) => ({
+    
+    const OTHER_CATEGORY_THRESHOLD = 5 // Percentage threshold for grouping
+    const smallCategories = []
+    const mainCategories = []
+    
+    let otherAmount = 0
+    let otherPercentage = 0
+    
+    categoryStats.forEach((stat) => {
+      if (stat.percentage < OTHER_CATEGORY_THRESHOLD) {
+        smallCategories.push(stat)
+        otherAmount += stat.amount
+        otherPercentage += stat.percentage
+      } else {
+        mainCategories.push(stat)
+      }
+    })
+    
+    if (smallCategories.length > 0) {
+      mainCategories.push({
+        category: {
+          name: 'Other',
+          color: '#94a3b8' // Gray color for other category
+        },
+        amount: otherAmount,
+        percentage: otherPercentage
+      })
+    }
+    
+    return mainCategories.map((stat) => ({
       name: stat.category.name,
       value: stat.amount,
       amount: stat.amount,
@@ -86,6 +118,9 @@ export function CategoryPieChart({ timeGrain }: CategoryPieChartProps) {
     <Card>
       <CardHeader>
         <CardTitle>Category Distribution</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {chartData.length} categories
+        </p>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
@@ -93,34 +128,41 @@ export function CategoryPieChart({ timeGrain }: CategoryPieChartProps) {
             No expenses recorded for this period
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="45%"
-                innerRadius={60}
-                outerRadius={90}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value) => formatCurrency(Number(value), currency)}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '0.5rem',
-                }}
-              />
-              <Legend
-                content={<CustomLegend currency={currency} />}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) => formatCurrency(Number(value), currency)}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '0.5rem',
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div>
+              <CustomLegend currency={currency} payload={chartData.map(entry => ({
+                value: entry.name,
+                payload: entry
+              }))} />
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardAction, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrencySymbol } from "@/lib/currency";
 import { useProfile } from "@/hooks/use-user";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { formatCurrency } from '@/lib/currency'
 
 interface ExchangeRate {
   code: string;
@@ -28,6 +30,7 @@ export function CurrencyExchange() {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [amount, setAmount] = useState<string>("1");
 
   useEffect(() => {
     if (!user?.currency) return;
@@ -78,14 +81,16 @@ export function CurrencyExchange() {
     );
   }
 
+  const numericAmount = parseFloat(amount) || 0;
+
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Exchange Rates</CardTitle>
         <p className="text-sm text-muted-foreground">
           {user?.currency} exchange rates
         </p>
-        <CardAction>
+        <CardAction className="hidden sm:block">
           <Tooltip>
             <TooltipTrigger asChild>
               <button className="p-1 text-muted-foreground hover:text-foreground transition-colors">
@@ -100,36 +105,69 @@ export function CurrencyExchange() {
           </Tooltip>
         </CardAction>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {isLoading ? (
-            Array(5).fill(0).map((_, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <Skeleton className="h-16 w-24" />
-                <Skeleton className="h-16 w-32" />
-              </div>
-            ))
-          ) : (
-            rates.map((rate) => (
-              <div
-                key={rate.code}
-                className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent/50 transition-colors ${user?.currency === rate.code ? 'hidden' : ''}`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{rate.symbol}</span>
-                  <span className="text-sm text-muted-foreground">{rate.code} 1.00</span>
+      <CardContent className="space-y-6">
+        {/* Amount Input */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-muted-foreground">
+            Amount in {user?.currency}
+          </label>
+          <Input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+            min="0"
+            step="0.01"
+            className="focus-visible:ring-2 focus-visible:ring-ring"
+          />
+        </div>
+
+        {/* Exchange Rates List */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Converted Amounts
+          </h3>
+          <div className="space-y-2 grid grid-cols-2 gap-4">
+            {isLoading ? (
+              Array(5).fill(0).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-accent/30">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-32" />
                 </div>
-                <div className="text-right">
-                  <div className="font-semibold">
-                    {rate.rate.toFixed(2)} {user?.currency}
+              ))
+            ) : (
+              rates.map((rate) => (
+                <div
+                  key={rate.code}
+                  className={`flex items-center justify-center p-3 rounded-lg hover:bg-accent/50 transition-colors ${user?.currency === rate.code ? 'hidden' : ''}`}
+                >
+                  <div className="text-center">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="font-semibold">
+                          {formatCurrency(( numericAmount * rate.rate), rate.code)}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="text-xs">
+                          {formatCurrency(numericAmount, user?.currency || 'AED')} = {formatCurrency(numericAmount * rate.rate, rate.code)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <div className="text-xs text-muted-foreground">{rate.name}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">{rate.name}</div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </CardContent>
+      <CardFooter className="text-xs text-center text-muted-foreground sm:hidden">
+        <p>
+          Rates By <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Exchange Rate API</a>
+        </p>
+      </CardFooter>
     </Card>
   );
 }

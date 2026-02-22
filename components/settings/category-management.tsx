@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '@/hooks/use-categories'
 import { Category } from '@/types/database'
-import { THEME_ACCENTS } from '@/lib/constants'
+import { CATEGORY_COLORS } from '@/lib/constants'
 
 const ICON_OPTIONS = [
   { value: 'Utensils', label: '🍴 Utensils' },
@@ -44,7 +44,7 @@ export function CategoryManagement({ type }: CategoryManagementProps) {
 
   const [formData, setFormData] = React.useState({
     name: '',
-    color: THEME_ACCENTS[0].color,
+    color: CATEGORY_COLORS[0].color,
     icon_name: ICON_OPTIONS[0].value,
     type: type,
   })
@@ -60,7 +60,7 @@ export function CategoryManagement({ type }: CategoryManagementProps) {
     } else {
       setFormData({
         name: '',
-        color: THEME_ACCENTS[0].color,
+        color: CATEGORY_COLORS[0].color,
         icon_name: ICON_OPTIONS[0].value,
         type: type,
       })
@@ -240,21 +240,21 @@ export function CategoryManagement({ type }: CategoryManagementProps) {
             <div>
               <Label htmlFor="color">Color</Label>
               <div className="grid grid-cols-4 gap-2">
-                {THEME_ACCENTS.map((accent) => (
+                {CATEGORY_COLORS.map((colorOption) => (
                   <Button
-                    key={accent.value}
+                    key={colorOption.value}
                     type="button"
-                    variant={formData.color === accent.color ? 'default' : 'outline'}
+                    variant={formData.color === colorOption.color ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setFormData({ ...formData, color: accent.color })}
+                    onClick={() => setFormData({ ...formData, color: colorOption.color })}
                     className="relative p-2 h-10"
                     disabled={createCategory.isPending || updateCategory.isPending}
                   >
                     <div
                       className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: accent.color }}
+                      style={{ backgroundColor: colorOption.color }}
                     />
-                    {formData.color === accent.color && (
+                    {formData.color === colorOption.color && (
                       <Check className="absolute top-1 right-1 h-3 w-3" />
                     )}
                   </Button>
