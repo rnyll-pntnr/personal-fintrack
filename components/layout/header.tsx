@@ -9,6 +9,7 @@ import { ProfileDropdown } from './profile-dropdown'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { VisuallyHidden } from '@/components/ui/visually-hidden'
 import { MobileNav } from './mobile-nav'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 // Map paths to breadcrumb titles
 const breadcrumbMap: Record<string, string> = {
@@ -60,19 +61,28 @@ export function Header() {
         <div className="flex items-center gap-2">
           {/* Theme toggle */}
           {mounted && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="h-10 w-10"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-10 w-10"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">
+                  Switch to {theme === 'dark' ? 'light' : 'dark'} mode
+                </p>
+              </TooltipContent>
+            </Tooltip>
           )}
 
           {/* Profile dropdown */}

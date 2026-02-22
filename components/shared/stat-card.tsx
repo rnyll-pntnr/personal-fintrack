@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus, Eye, EyeOff } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,8 @@ interface StatCardProps {
   icon?: React.ReactNode
   isLoading?: boolean
   className?: string
+  isMasked?: boolean
+  onToggleMask?: () => void
 }
 
 export function StatCard({
@@ -25,6 +27,8 @@ export function StatCard({
   icon,
   isLoading,
   className,
+  isMasked,
+  onToggleMask,
 }: StatCardProps) {
   const { accent } = useThemeAccent()
   const trendDirection = trend && trend > 0 ? 'up' : trend && trend < 0 ? 'down' : 'neutral'
@@ -61,17 +65,37 @@ export function StatCard({
     }
   }
 
+  // Mask currency value - preserve currency symbol, mask digits
+  const maskCurrencyValue = (valueStr: string): string => {
+    // Extract currency symbol (letters or special characters at beginning)
+    const symbolMatch = valueStr.match(/^[^\d]+/)
+    const symbol = symbolMatch ? symbolMatch[0] : ''
+    // Mask numeric part
+    return symbol + '***.**'
+  }
+
   return (
     <Card className={cn('border border-border/80', className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        {icon && (
-          <div className={cn('p-2 rounded-lg', getAccentBgColor(), getAccentColor())}>
-            {icon}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {onToggleMask && (
+            <button
+              onClick={onToggleMask}
+              className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+              title={isMasked ? 'Show balance' : 'Hide balance'}
+            >
+              {isMasked ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </button>
+          )}
+          {icon && (
+            <div className={cn('p-2 rounded-lg', getAccentBgColor(), getAccentColor())}>
+              {icon}
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -81,7 +105,9 @@ export function StatCard({
           </>
         ) : (
           <>
-            <div className="text-lg sm:text-xl md:text-2xl font-bold">{value}</div>
+            <div className="text-lg sm:text-xl md:text-2xl font-bold">
+              {isMasked && typeof value === 'string' ? maskCurrencyValue(value) : value}
+            </div>
             {(trend !== undefined || description) && (
               <div className="flex items-center gap-1 mt-1">
                 {trend !== undefined && (

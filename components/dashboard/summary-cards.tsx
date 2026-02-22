@@ -21,6 +21,7 @@ export function SummaryCards({ timeGrain }: SummaryCardsProps) {
   const { currentTotal: totalIncome, trend: incomeTrend, isLoading: incomeLoading } = useIncomeStats(timeGrain)
   const { data: currentBalance, isLoading: balanceLoading } = useCurrentBalance()
   const { data: recurringDue, isLoading: recurringLoading } = usePendingRecurringTotal()
+  const [isBalanceMasked, setIsBalanceMasked] = React.useState(true)
 
   const currency = profile?.currency || 'AED'
   const netCashFlow = (totalIncome || 0) - (totalSpent || 0)
@@ -57,6 +58,8 @@ export function SummaryCards({ timeGrain }: SummaryCardsProps) {
         description="vs last period"
         icon={<CreditCard className="h-4 w-4" />}
         isLoading={balanceLoading}
+        isMasked={isBalanceMasked}
+        onToggleMask={() => setIsBalanceMasked(!isBalanceMasked)}
       />
     </div>
   )
